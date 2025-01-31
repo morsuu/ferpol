@@ -143,6 +143,7 @@ const App = () => {
                 <p><strong>Telefon:</strong> {container.tenant.phone}</p>
                 <p><strong>Kwota wynajmu:</strong> {container.tenant.rental_amount} PLN</p>
                 <p><strong>Status płatności:</strong> {container.tenant.payment_status}</p>
+                <p><strong>Rodzaj platnosci:</strong> {container.tenant.payment_type === 'przy podstawieniu' ? 'Przy podstawieniu' : 'Przy odbiorze'}</p>
                 <p><strong>Faktura:</strong> {container.tenant.invoice === 'tak' ? 'Tak' : 'Nie'}</p>
                 <div className="buttons-container">
                   <button className="edit-button">Edytuj</button>

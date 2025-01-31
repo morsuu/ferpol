@@ -67,6 +67,10 @@ body {
   transition: background-color 0.3s;
 }
 
+.info-button {
+  margin-top: 10px;
+}
+
 .add-button:hover,
 .info-button:hover {
   background-color: #0056b3;
@@ -93,7 +97,7 @@ body {
 
 .form-group input,
 .form-group select {
-  width: 100%;
+  width: 95%;
   padding: 10px;
   margin-top: 5px;
   border: 1px solid #555;
@@ -116,7 +120,6 @@ body {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-top: 10px;
 }
 
 .save-button:hover {
