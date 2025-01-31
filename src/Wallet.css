@@ -1,0 +1,16 @@
+.wallet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #121212;
+    color: white;
+    text-align: center;
+  }
+  
+  .dark-side {
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #1f1f1f;
+  }
+  

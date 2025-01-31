@@ -30,9 +30,14 @@ const App = () => {
 
   const [showInfoModal, setShowInfoModal] = useState(false);
 
+  const [walletTransactions, setWalletTransactions] = useState([]); // Nowy stan do przechowywania transakcji
+  const [transactionDescription, setTransactionDescription] = useState('');
+  const [transactionAmount, setTransactionAmount] = useState('');
+
   const selectContainer = (containerId) => {
     const container = containers.find(c => c.id === containerId);
-    setSelectedContainer(containerId);
+    setSelectedContainer(containerId);  // Zmieniamy tylko aktywny kontener
+  
     if (container && container.tenant) {
       setNewTenant(container.tenant);
       setContainerInfo({
@@ -41,6 +46,7 @@ const App = () => {
         rental_amount: container.rental_amount,
       });
     } else {
+      // Zresetuj dane, jeśli kontener nie ma najemcy
       setNewTenant({
         name: '',
         address: '',
@@ -90,13 +96,15 @@ const App = () => {
     setContainerInfo({ location: '', material: '', rental_amount: '' });
   };
 
-  const handleDeleteTenant = () => {
+  const handleDeleteTenant = (containerId) => {
+    // Usuwamy najemcę tylko z wybranego kontenera
     const updatedContainers = containers.map((container) =>
-      container.id === selectedContainer ? { ...container, tenant: null } : container
+      container.id === containerId ? { ...container, tenant: null } : container
     );
-    setContainers(updatedContainers);
-    setSelectedContainer(null);
+    setContainers(updatedContainers);  // Zaktualizowane kontenery
+    setSelectedContainer(null);  // Resetujemy zaznaczenie kontenera
   };
+  
 
   const handleShowInfo = (containerId) => {
     const container = containers.find(c => c.id === containerId);
@@ -124,9 +132,33 @@ const App = () => {
     setShowInfoModal(false);
   };
 
+  const handleAddTransaction = () => {
+    if (transactionDescription && transactionAmount) {
+      const currentDateTime = new Date();
+      const formattedDateTime = currentDateTime.toISOString().slice(0, 19).replace('T', ' '); // Format YYYY-MM-DD HH:MM:SS
+      const newTransaction = {
+        description: transactionDescription,
+        amount: parseFloat(transactionAmount),
+        date: formattedDateTime,
+      };
+      setWalletTransactions([...walletTransactions, newTransaction]);
+      setTransactionDescription('');
+      setTransactionAmount('');
+    }
+  };
+
+  const handleDeleteTransaction = (index) => {
+    const updatedTransactions = walletTransactions.filter((_, i) => i !== index);
+    setWalletTransactions(updatedTransactions);
+  };
+
+  const calculateBalance = () => {
+    return walletTransactions.reduce((total, transaction) => total + transaction.amount, 0);
+  };
+
   return (
     <div className="app">
-      <h1 className="title">Kontenery - Wynajem</h1>
+      <h1 className="title">FERPOL - Panel Admina</h1>
       <div className="container-list">
         {containers.map((container) => (
           <div
@@ -141,12 +173,20 @@ const App = () => {
                 <p><strong>Adres:</strong> {container.tenant.address}</p>
                 <p><strong>Telefon:</strong> {container.tenant.phone}</p>
                 <p><strong>Kwota wynajmu:</strong> {container.tenant.rental_amount} PLN</p>
-                <p><strong>Status płatności:</strong> {container.tenant.payment_status}</p>
                 <p><strong>Rodzaj platnosci:</strong> {container.tenant.payment_type === 'przy podstawieniu' ? 'Przy podstawieniu' : 'Przy odbiorze'}</p>
                 <p><strong>Faktura:</strong> {container.tenant.invoice === 'tak' ? 'Tak' : 'Nie'}</p>
+                <p><strong>Status płatności:</strong> {container.tenant.payment_status}</p>
                 <div className="buttons-container">
                   <button className="edit-button">Edytuj</button>
-                  <button className="delete-button" onClick={handleDeleteTenant}>Usuń osobę</button>
+                  <button
+  className="delete-button"
+  onClick={(e) => {
+    e.stopPropagation();  // Zapobiegamy propagacji kliknięcia
+    handleDeleteTenant(container.id);  // Przekazujemy id kontenera do usunięcia
+  }}
+>
+  Usuń osobę
+</button>
                 </div>
               </div>
             ) : (
@@ -285,19 +325,60 @@ const App = () => {
                   placeholder="Wpisz kwotę wynajmu"
                 />
               </div>
-              </form>
-              <div className="buttons-container">
+            </form>
+            <div className="buttons-container">
               <button className="save-button" onClick={handleSaveInfo}>
                 Zapisz
               </button>
-
-            <button className="close-button" onClick={handleCloseModal}>
-              Zamknij
-            </button>
+              <button className="close-button" onClick={handleCloseModal}>
+                Zamknij
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Sekcja Portfel */}
+      <div className="wallet-section">
+        <h3>Portfel 💲</h3>
+        <div className="form-group">
+          <label>Opis transakcji:</label>
+          <input
+            type="text"
+            value={transactionDescription}
+            onChange={(e) => setTransactionDescription(e.target.value)}
+            placeholder="Wpisz opis transakcji"
+          />
+        </div>
+        <div className="form-group">
+          <label>Kwota transakcji:</label>
+          <input
+            type="number"
+            value={transactionAmount}
+            onChange={(e) => setTransactionAmount(e.target.value)}
+            placeholder="Wpisz kwotę"
+          />
+        </div>
+        <button onClick={handleAddTransaction} className="add-transaction-button">
+          Dodaj transakcję
+        </button>
+
+        <h4>Saldo: {calculateBalance()} PLN</h4>
+
+        <div className="transactions-list">
+          {walletTransactions.map((transaction, index) => (
+            <div key={index} className="transaction-item">
+              <p>{transaction.date} - {transaction.description}: {transaction.amount} PLN</p>
+              <button
+                onClick={() => handleDeleteTransaction(index)}
+                className="delete-transaction-button"
+              >
+                Usuń
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
