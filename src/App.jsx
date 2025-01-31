@@ -41,7 +41,6 @@ const App = () => {
         rental_amount: container.rental_amount,
       });
     } else {
-      // Resetujemy formularz przy zmianie kontenera
       setNewTenant({
         name: '',
         address: '',
@@ -132,7 +131,7 @@ const App = () => {
         {containers.map((container) => (
           <div
             key={container.id}
-            className={`container-item ${selectedContainer === container.id ? 'selected' : ''}`}
+            className={`container-item ${selectedContainer === container.id ? 'selected' : ''} ${container.tenant ? 'red-border' : 'green-border'}`}
             onClick={() => selectContainer(container.id)}
           >
             <h2>Kontener {container.id}</h2>
@@ -244,25 +243,26 @@ const App = () => {
                 <option value="nie zaplacone">Nie zaplacone</option>
               </select>
             </div>
+            <button type="button" className="save-button" onClick={handleSave}>
+              Zapisz
+            </button>
           </form>
-          <button className="save-button" onClick={handleSave}>
-            {containers.find(c => c.id === selectedContainer).tenant ? 'Zapisz zmiany' : 'Zapisz'}
-          </button>
         </div>
       )}
 
       {showInfoModal && (
         <div className="info-modal">
           <div className="info-modal-content">
-            <h3>Info dla kontenera {selectedContainer}</h3>
+            <h3>Informacje o kontenerze</h3>
             <form>
               <div className="form-group">
-                <label>Lokalizacja kontenera:</label>
+                <label>Lokalizacja:</label>
                 <input
                   type="text"
                   name="location"
                   value={containerInfo.location}
                   onChange={handleContainerInfoChange}
+                  placeholder="Wpisz lokalizację"
                 />
               </div>
               <div className="form-group">
@@ -272,6 +272,7 @@ const App = () => {
                   name="material"
                   value={containerInfo.material}
                   onChange={handleContainerInfoChange}
+                  placeholder="Wpisz materiał"
                 />
               </div>
               <div className="form-group">
@@ -281,12 +282,18 @@ const App = () => {
                   name="rental_amount"
                   value={containerInfo.rental_amount}
                   onChange={handleContainerInfoChange}
+                  placeholder="Wpisz kwotę wynajmu"
                 />
               </div>
-            </form>
-            <div className="buttons-container">
-              <button className="save-button" onClick={handleSaveInfo}>Zapisz</button>
-              <button className="close-button" onClick={handleCloseModal}>Zamknij</button>
+              </form>
+              <div className="buttons-container">
+              <button className="save-button" onClick={handleSaveInfo}>
+                Zapisz
+              </button>
+
+            <button className="close-button" onClick={handleCloseModal}>
+              Zamknij
+            </button>
             </div>
           </div>
         </div>

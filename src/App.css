@@ -48,6 +48,14 @@ body {
   background-color: #4f565e;
 }
 
+.container-item.red-border {
+  border-color: #e74c3c;
+}
+
+.container-item.green-border {
+  border-color: #4CAF50;
+}
+
 /* Przycisk dodania osoby i info - teraz obok siebie */
 .buttons-container {
   display: flex;
